@@ -214,9 +214,11 @@ sources per claim, never more than five.
 **Preferred: the report page.** When the session has a code tool and a
 way to show an HTML page (an artifact, a canvas, or a saved file the
 user can open), build it with the bundled assembler. The page contains
-no JavaScript: the assembler writes every word into it, and filters,
-views and claim notes work on plain HTML and CSS. That is what lets it
-render in hosts that block scripts, such as Langdock. Never add a
+no JavaScript: the assembler writes every word into it. Each checked
+passage carries a footnote number that links to the claim's verdict,
+rationale and sources in a numbered list under the article, and each
+entry links back. That is what lets it work in hosts that block
+scripts, such as Langdock. Never add a
 script to it, and deliver the file the assembler wrote, unchanged.
 
 1. Close the browser ledger. List it with `python3

@@ -16,7 +16,7 @@ Usage:
   python3 assemble.py build SOURCE.txt CHECK.json OUT.html
       (the template is ../assets/template.html; pass a fourth path to
       override: build SOURCE.txt CHECK.json TEMPLATE.html OUT.html)
-      The page is written in full here and contains no JavaScript.
+      The page is written in full here: plain HTML with footnotes, no JavaScript.
   python3 assemble.py export md|csv|json|comments SOURCE.txt CHECK.json OUT
       The same findings in another shape, only when the user asks:
       md   the text report (the fallback format in SKILL.md), for docs,
@@ -431,18 +431,20 @@ def cmd_build(src, check_f, tpl_f, out_f):
 # fixed labels live in assets/template.html. Translate both together.
 PAGE = {
     "verdict": {"s": "Supported", "r": "Needs Review", "c": "Could Not Verify"},
+    "sep": " — ",
     "published": "Published {}",
     "checked": "Checked {}",
-    "claim_n": "claim {}",
     "jump": "Claim {n}: {claim}",
-    "close": "Close claim details",
+    "fn_title": "Claim {n}: {verdict}",
+    "back": "back to the text",
     "no_source_r": "no source cited",
     "no_source": "no reliable independent source found",
     "lede": ("{n} claims checked against the live web: <b>{r} need review</b>, "
              "{c} could not be independently verified, and {s} are supported."),
+    "review_list": "Needs review: {}",
+    "claim_word": ("claim", "claims"),
     "slug_default": "fact-check",
 }
-
 
 def _e(x):
     return html.escape(str(x), quote=True)
@@ -454,8 +456,10 @@ def _data_uri(mime, body):
 
 
 def render_page(tpl, d, paras):
-    """Fill the template: header, spine, article with its claim cards, the
-    claims list and the export texts, all as static HTML."""
+    """Fill the template: header, spine, the article with a numbered
+    footnote after each checked passage, the footnotes themselves (verdict,
+    rationale, sources, a link back) and the export texts. Static HTML;
+    the only interaction is following links."""
     check, refs, claims = d["check"], d["refs"], d["claims"]
     by_id = {c[0]: c for c in claims}
     rank = {"r": 0, "c": 1, "s": 2}
@@ -463,51 +467,55 @@ def render_page(tpl, d, paras):
     def worst(ids):
         return min((by_id[i][1] for i in ids), key=rank.get)
 
-    def note(c, with_claim, el_id=""):
-        n, v, claim, why, keys, _ = c
-        if keys:
-            srcs = " &middot;&nbsp;".join(
-                f'<a href="{_e(refs[k][1])}" target="_blank" rel="noopener">{_e(refs[k][0])}</a>' for k in keys)
-        else:
-            srcs = f'<span class="none">{_e(PAGE["no_source_r"] if v == "r" else PAGE["no_source"])}</span>'
-        ct = ""
-        if with_claim:
-            ct = f'<span class="claimtext">{_e(re.sub(r"[.。]+\s*$", "", claim))}.</span> '
-        idattr = f' id="{el_id}"' if el_id else ""
-        return (f'<div class="note v-{v}"{idattr}><span class="verdict">{_e(PAGE["verdict"][v])}</span> — '
-                f'{ct}<span class="why">{_e(why)}</span><span class="srcs">{srcs}'
-                f'<span class="cid">{_e(PAGE["claim_n"].format(n))}</span></span></div>')
+    # a claim's footnote number goes after the last stretch of text it covers
+    last_seg = {}
+    for pi, para in enumerate(paras):
+        for si, seg in enumerate(para):
+            for i in (seg[1] or []):
+                last_seg[i] = (pi, si)
 
-    # article: each claimed stretch links to its card, which sits under the paragraph
-    first_card = {}
     art = []
     for pi, para in enumerate(paras):
-        body, ticks, cards = [], [], []
+        body = []
         for si, seg in enumerate(para):
             t, ids = seg[0], seg[1]
             if ids:
-                w, k = worst(ids), f"k{pi}_{si}"
-                for i in ids:
-                    first_card.setdefault(i, k)
-                inner = f'<a class="mk" href="#{k}"><mark class="{w}">{_e(t)}</mark></a>'
-                ticks.append(f'<a class="{w}" href="#{k}" tabindex="-1"></a>')
-                cards.append(f'<div class="ic" id="{k}">'
-                             + "".join(note(by_id[i], len(ids) > 1) for i in ids)
-                             + f'<a class="ic-close" href="#p{pi}" aria-label="{_e(PAGE["close"])}">&times;</a></div>')
+                inner = f'<mark class="{worst(ids)}">{_e(t)}</mark>'
+                ends = [i for i in ids if last_seg[i] == (pi, si)]
+                if ends:
+                    inner += '<sup class="fn">' + ",".join(
+                        f'<a class="{by_id[i][1]}" id="r{i}" href="#c{i}" '
+                        f'title="{_e(PAGE["fn_title"].format(n=i, verdict=PAGE["verdict"][by_id[i][1]]))}">{i}</a>'
+                        for i in ends) + "</sup>"
             else:
                 inner = _e(t)
             body.append(f'<span class="q">{inner}</span>' if len(seg) > 2 else inner)
-        pm = f'<span class="pmarks" aria-hidden="true">{"".join(ticks)}</span>' if ticks else ""
-        art.append(f'<div class="para" id="p{pi}">{pm}<p>{"".join(body)}</p></div>' + "".join(cards))
+        art.append(f'<p>{"".join(body)}</p>')
 
-    lst = "".join(note(c, True, f"l{c[0]}") for c in claims)
+    notes = []
+    for n, v, claim, why, keys, _ in claims:
+        if keys:
+            srcs = " &middot; ".join(
+                f'<a href="{_e(refs[k][1])}" target="_blank" rel="noopener">{_e(refs[k][0])}</a>' for k in keys)
+        else:
+            srcs = f'<span class="none">{_e(PAGE["no_source_r"] if v == "r" else PAGE["no_source"])}</span>'
+        ct = _e(re.sub(r"[.。]+\s*$", "", claim))
+        notes.append(
+            f'<p class="note v-{v}" id="c{n}"><span class="num">{n}</span> '
+            f'<span class="verdict">{_e(PAGE["verdict"][v])}</span>{_e(PAGE["sep"])}'
+            f'<span class="claimtext">{ct}.</span> <span class="why">{_e(why)}</span>'
+            f' <span class="srcs">{srcs} <a class="back" href="#r{n}" aria-label="{_e(PAGE["back"])}">&#8617; {_e(PAGE["back"])}</a></span></p>')
 
-    def spine(target):
-        return "".join(
-            f'<a class="{c[1]}" href="#{target(c[0])}" title="{_e(PAGE["jump"].format(n=c[0], claim=c[2]))}" '
-            f'aria-label="{_e(PAGE["jump"].format(n=c[0], claim=c[2]))}"></a>' for c in claims)
+    spine = "".join(
+        f'<a class="{c[1]}" href="#c{c[0]}" title="{_e(PAGE["jump"].format(n=c[0], claim=c[2]))}" '
+        f'aria-label="{_e(PAGE["jump"].format(n=c[0], claim=c[2]))}"></a>' for c in claims)
 
     counts = Counter(c[1] for c in claims)
+    review = [c[0] for c in claims if c[1] == "r"]
+    review_list = ""
+    if review:
+        review_list = ('<p class="reviewlist">' + _e(PAGE["review_list"]).format(
+            " ".join(f'<a href="#c{n}">[{n}]</a>' for n in review)) + "</p>")
     meta = [check.get("source", ""), check.get("byline", ""),
             PAGE["published"].format(check["published"]) if check.get("published") else "",
             PAGE["checked"].format(check["checked"]) if check.get("checked") else ""]
@@ -517,16 +525,16 @@ def render_page(tpl, d, paras):
     vals = {
         "REPORT_TITLE": _e(check.get("page_title", title or "Checked")),
         "TITLE": _e(title),
-        "META": "".join(f"<span>{_e(m)}</span>" for m in meta if m),
-        "SPINE_ARTICLE": spine(lambda n: first_card.get(n, f"l{n}")),
-        "SPINE_LIST": spine(lambda n: f"l{n}"),
+        "META": '<span class="dot">·</span>'.join(f"<span>{_e(m)}</span>" for m in meta if m),
+        "SPINE": spine,
         "COUNT": str(len(claims)),
-        "LEDE": PAGE["lede"].format(n=len(claims), r=counts["r"], c=counts["c"], s=counts["s"]),
-        "N_ALL": str(len(claims)), "N_R": str(counts["r"]), "N_C": str(counts["c"]), "N_S": str(counts["s"]),
+        "LEDE": PAGE["lede"].format(n=len(claims), w=PAGE["claim_word"][len(claims) != 1],
+                                    r=counts["r"], c=counts["c"], s=counts["s"]),
+        "REVIEW_LIST": review_list,
         "ARTICLE": "".join(art),
-        "LIST": lst,
+        "NOTES": "".join(notes),
         "SLUG": _e(slug),
-        "X_MD": _e(x["md"]), "X_CSV": _e(x["csv"].lstrip("\ufeff")), "X_JSON": _e(x["json"]),
+        "X_MD": _e(x["md"]), "X_CSV": _e(x["csv"].lstrip("﻿")), "X_JSON": _e(x["json"]),
         "DL_MD": _e(_data_uri("text/markdown", x["md"])),
         "DL_CSV": _e(_data_uri("text/csv", x["csv"])),
         "DL_JSON": _e(_data_uri("application/json", x["json"])),
@@ -534,8 +542,8 @@ def render_page(tpl, d, paras):
     # one pass over the template, so text inside the article can never be
     # mistaken for a placeholder
     out = re.sub(r"__([A-Z_]+)__", lambda m: vals.get(m.group(1), m.group(0)), tpl)
-    if re.search(r"<script", out, re.I):
-        sys.exit("The page would contain a <script> tag; this edition must stay script-free.")
+    if re.search(r"<script|<[^>]*\son[a-z]+\s*=", out, re.I):
+        sys.exit("The page would contain a script or an event handler; this edition must stay script-free.")
     return out
 
 VERDICT_WORD = {"r": "needs_review", "c": "could_not_verify", "s": "supported"}

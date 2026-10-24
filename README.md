@@ -15,15 +15,22 @@ the report page work there.
 
 ## What was changed
 
-- **The report page contains no JavaScript.** `scripts/assemble.py` now
-  writes the whole page (article, highlights, claim notes, claims list,
-  exports) as plain HTML, and the interactive parts run on HTML and CSS:
-  - clicking a highlighted passage opens its claim notes
-  - the verdict filters and the Article / Claims switch are radio buttons
+- **The report page is plain HTML with footnotes.** `scripts/assemble.py`
+  now writes the whole page as finished HTML, with no JavaScript and no
+  interactive CSS. The only interaction is following links:
+  - every checked passage in the article is highlighted and followed by a
+    footnote number, which links to that claim's verdict, rationale and
+    sources in a numbered list under the article
+  - each entry in that list links back to its passage
+  - the colored bar at the top and the "Needs review" line link straight
+    to the claims
   - the Export section at the bottom shows Markdown, CSV and JSON in text
     boxes to copy, plus download links where the viewer allows them
-  - the copy buttons and hover effects are gone, because they need a script
-- **`SKILL.md`** describes the script-free page and the new Export section.
+  - gone, because they need a script or interactive CSS: the verdict
+    filters, the Article / Claims switch, the pop-up notes, the copy
+    buttons and the hover effects
+  - the page stays readable even if a viewer strips its styles
+- **`SKILL.md`** describes the footnote page and the Export section.
 - **The footer** credits this edition next to Verso.
 - **Document comments** say "posted by an AI assistant" instead of "posted
   by Claude", since Langdock may run other models.
