@@ -65,7 +65,9 @@ quote against the text, applies the words-per-claim gate, and records
 the list: the report will not build unless every claim on it gets its
 own claim in check.json, anchored where its Pass 1 quote is. Fix what it
 reports now, while a re-walk is cheap. From here on, claims are split,
-never merged.
+never merged. It also prints any news-agency markers it finds in the
+text and asks for the `wire:` line at the top of claims.md (see Copies
+of the text and agency copy, below); settle that line before Pass 2.
 
 ## Pass 2 — check every claim
 
@@ -119,7 +121,7 @@ to reach the text, the claim stays could_not_verify.
   doesn't reconcile is a finding and needs no search.
 - **Independence.** The checked text, an interested party, and an
   outlet repeating the text prove nothing. The same wire copy in five
-  outlets is one source. That words were said is proved by the
+  outlets is one source (see Copies of the text and agency copy). That words were said is proved by the
   speaker's own record or by two outlets that did their own reporting;
   one outlet carrying the words leaves it could_not_verify.
 - **Two sources, or one definitive one.** Support needs two independent
@@ -138,6 +140,42 @@ to reach the text, the claim stays could_not_verify.
   substance hold up? A vindicated hedge is worth saying.
 - **If the search budget runs out**, mark every remaining claim
   could_not_verify with a note that it went unresearched.
+
+### Copies of the text and agency copy
+
+A search for a claim often lands on the checked text itself: the same
+article at another address (a syndication partner, a portal, an
+aggregator), or the same news-agency story (dpa, Reuters, AFP, AP and
+others) run by other outlets, word for word or lightly rewritten. None
+of these is evidence for the text. They prove only that the text was
+copied.
+
+1. **Know the agency basis before Pass 2.** The `wire:` line at the top
+   of claims.md says whether the text is agency copy, wholly or in part
+   (`wire: dpa`, `wire: dpa, Reuters`, `wire: none`). Signs: a dateline
+   like "Berlin (dpa) -", a credit like "lb/dpa", "with reporting by",
+   "mit Material von", or an outlet that names the agency as its source.
+   If the text is agency copy, the agency and every outlet carrying that
+   story count as the checked text itself. For those claims, other
+   outlets are no route: go to what the agency relied on, such as the
+   press release, the statistic, the authority's statement, the court,
+   or the recording of the press conference.
+2. **Test every outlet before it carries a verdict.** Save the page's
+   text to a file and run `python3 scripts/evidence.py overlap
+   source.txt page.txt`. It leaves quotations out (two outlets may
+   honestly quote the same words) and compares the rest. COPY: the page
+   is the text or its agency copy; never cite it. SAME BASIS: it most
+   likely rewrites the same story; it counts as the same source as the
+   text, not as an independent one. OWN WORDING: no sign of copying.
+   Primary records (rung 1 and 2) need no test. Without a code tool,
+   compare by eye: a dozen identical words in a row outside a quotation
+   is a copy.
+3. **Two outlets count only with their own reporting.** Independent
+   means visibly its own work: its own quotes, its own correspondent,
+   details the agency version lacks, and a byline that is not the
+   agency's. Two rewrites of one agency story are one source. If that is
+   all there is, the verdict is could_not_verify, and the rationale says
+   so ("found only in versions of the dpa report").
 
 ### The three verdicts
 

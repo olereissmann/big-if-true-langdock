@@ -57,6 +57,8 @@ could_not_verify, name the recording or notes that would settle it.
 ## Traps
 
 - Quote-aggregator sites are not evidence.
+- Outlets carrying the same agency story all quote the same words; that is one
+  source, not many. Test them with `evidence.py overlap` (SKILL.md).
 - A transcript from a third party is weaker than the institution's own;
   say which you used.
 - "Said last week" with no venue: find the venue first, then the words.

@@ -17,6 +17,8 @@ to the next. Each claim is one line, with its quote on the line below,
 copied exactly from the text:
 
 ```
+wire: dpa
+
 ## P3
 - [fact] Organizers announced Sunday that they had enough signatures.
   > announced Sunday that they have enough signatures
@@ -35,6 +37,14 @@ cheap, and in Pass 2 one good search typically serves a whole cluster of
 claims, so a far larger claim list costs only modestly more retrieval.
 Never drop a claim at extraction time because it seems minor, obvious, or
 expensive to check.
+
+**Start the file with the agency line.** The first line of claims.md
+says whether the text is news-agency copy, wholly or in part: `wire:
+dpa` (or `wire: dpa, Reuters`, the agencies it names) or `wire: none`.
+Look for a dateline like "Berlin (dpa) -", a credit like "lb/dpa",
+"with reporting by", "mit Material von", or a sentence naming an agency
+as the source of the story. Record what the text shows; do not guess.
+This line decides later which sources can count as independent.
 
 **Keep a discard log.** When you pass over a sentence as unextractable,
 note it in the claims file with a one-word reason — *opinion*,
