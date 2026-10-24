@@ -1,20 +1,6 @@
 ---
 name: big-if-true
-description: >-
-  Rigorous, claim-by-claim fact-checking of any article, draft, newsletter,
-  post, press release, or document, in any language: extract every checkable
-  factual claim, verify each against primary records and independent sources
-  (official data APIs, filings, transcripts, archives, the live web, and the
-  browser when pages block fetch), and return calibrated verdicts with
-  citations. Use whenever the user asks to fact-check something, verify
-  claims, stats, or figures before quoting or publishing them, check whether
-  a text is accurate, asks "is this true?", wants a pre-publication accuracy
-  pass on a draft, asks to go through their own or a colleague's piece
-  because something feels off or the numbers seem wrong, wants to know
-  whether a quote, study, or social-media post is real, or shares an article
-  and wants to know if it holds up — even if they never use the words
-  "fact-check." Requires web search; code execution builds the report page
-  and runs the data lookups (falls back to a text report without it).
+description: 'Claim-by-claim fact-check of an article, draft or post: verifies every checkable claim against primary sources and the live web, with verdicts and links. Use when asked to fact-check, verify figures or quotes, or "is this true?".'
 metadata:
   version: "0.7.1-langdock"
 ---
