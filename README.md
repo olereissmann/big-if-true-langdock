@@ -1,33 +1,54 @@
-# Big If True, script-free edition
+# Big If True, Langdock-ready edition
 
 This is a fork of [Verso-Lab/big-if-true-plugin](https://github.com/Verso-Lab/big-if-true-plugin),
-the fact-checking skill by [Verso](https://verso.ink). The method, the
-scripts and the checks are Verso's and unchanged. One thing is different:
-**the report page contains no JavaScript.**
+the fact-checking skill by [Verso](https://verso.ink/), adapted by
+Ole Reissmann for [THEFUTURE](https://olereissmann.com/newsletter/), a
+newsletter on all things AI and journalism. The fact-checking method and
+its rules are Verso's and unchanged.
 
-Some AI workspaces, Langdock among them, block scripts in HTML pages for
-security reasons. The original report page builds itself with JavaScript,
-so there it stays empty. In this edition `scripts/assemble.py` writes the
-whole page (article, highlights, claim notes, claims list, exports) as
-plain HTML, and the interactive parts run on HTML and CSS alone:
+## Why this fork exists
 
-- clicking a highlighted passage opens its claim notes (a link to the note)
-- the verdict filters and the Article / Claims switch are radio buttons
-- the Export section shows Markdown, CSV and JSON in text boxes to copy,
-  plus download links where the viewer allows them
-- the copy buttons are gone, since copying to the clipboard needs a script
+Some AI workspaces, Langdock among them, block JavaScript in HTML pages
+for security reasons. The original report page builds itself with
+JavaScript, so in those workspaces it stays empty. This edition makes
+the report page work there.
 
-The same page still works in Claude, Codex or any browser.
+## What was changed
 
-**Install in Langdock:** upload the folder `skills/big-if-true` as a skill
-(zipped, if Langdock asks for a file). The report page needs code
-execution; without it the skill falls back to a text report.
+- **The report page contains no JavaScript.** `scripts/assemble.py` now
+  writes the whole page (article, highlights, claim notes, claims list,
+  exports) as plain HTML, and the interactive parts run on HTML and CSS:
+  - clicking a highlighted passage opens its claim notes
+  - the verdict filters and the Article / Claims switch are radio buttons
+  - the Export section at the bottom shows Markdown, CSV and JSON in text
+    boxes to copy, plus download links where the viewer allows them
+  - the copy buttons and hover effects are gone, because they need a script
+- **`SKILL.md`** describes the script-free page and the new Export section.
+- **The footer** credits this edition next to Verso.
+- **Document comments** say "posted by an AI assistant" instead of "posted
+  by Claude", since Langdock may run other models.
+
+The page still works in Claude, Codex or any browser.
+
+## Install in Langdock
+
+Upload the folder `skills/big-if-true` as a skill (zipped, if Langdock asks
+for a file). The report page needs code execution; without it the skill
+writes a text report instead.
+
+## Questions and bugs
+
+Problems with this edition: open an issue in this repository, not with
+Verso. Problems with the method itself are best reported to Verso.
 
 Licence: MIT, like the original. All credit for the method goes to Verso.
 
 ---
 
 ## The original README
+
+*Below is Verso's README, unchanged. Its install links set up the
+original version, not this one.*
 
 A fact-checking plugin for Claude by [Verso](https://verso.ink). Give it an
 article, a draft, a newsletter or a press release: it finds every checkable
