@@ -32,9 +32,10 @@ The page still works in Claude, Codex or any browser.
 
 ## Install in Langdock
 
-Upload the folder `skills/big-if-true` as a skill (zipped, if Langdock asks
-for a file). The report page needs code execution; without it the skill
-writes a text report instead.
+Zip the *contents* of `skills/big-if-true`, so that `SKILL.md` sits at the
+root of the archive next to `assets/`, `references/` and `scripts/` (not
+inside a parent folder), and import the zip as a skill. The report page
+needs code execution; without it the skill writes a text report instead.
 
 ## Questions and bugs
 
