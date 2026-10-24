@@ -16,7 +16,7 @@ description: >-
   "fact-check." Requires web search; code execution builds the report page
   and runs the data lookups (falls back to a text report without it).
 metadata:
-  version: "0.7.1"
+  version: "0.7.1-langdock"
 ---
 
 # Big If True — editorial fact-checking
@@ -226,8 +226,12 @@ Problems first, then unresolved, then the clean bill. Two to four
 sources per claim, never more than five.
 
 **Preferred: the report page.** When the session has a code tool and a
-way to show an HTML page (an artifact, or a saved file the user can
-open), build it with the bundled assembler.
+way to show an HTML page (an artifact, a canvas, or a saved file the
+user can open), build it with the bundled assembler. The page contains
+no JavaScript: the assembler writes every word into it, and filters,
+views and claim notes work on plain HTML and CSS. That is what lets it
+render in hosts that block scripts, such as Langdock. Never add a
+script to it, and deliver the file the assembler wrote, unchanged.
 
 1. Close the browser ledger. List it with `python3
    scripts/evidence.py blocked`; the build needs the file even when it
@@ -259,8 +263,9 @@ open), build it with the bundled assembler.
    build again.
 4. Deliver report.html, then finish in chat, below.
 
-The page's Export menu copies the findings as Markdown, CSV or JSON,
-and every note has a copy button. When the user wants those as files in
+The page's Export section, at the bottom, holds the findings as
+Markdown, CSV and JSON, ready to select and copy, with download links
+where the viewer allows them. When the user wants those as files in
 chat, run `python3 scripts/assemble.py export md|csv|json source.txt
 check.json OUT`; never hand-write them.
 

@@ -9,9 +9,9 @@
   "plugins": [
     {
       "name": "big-if-true",
-      "displayName": "Big If True",
+      "displayName": "Big If True (script-free)",
       "source": "./",
-      "version": "0.7.1"
+      "version": "0.7.1-langdock"
     }
   ]
 }
