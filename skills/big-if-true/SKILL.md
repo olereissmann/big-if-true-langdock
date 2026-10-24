@@ -290,7 +290,8 @@ Compact list, closely related claims grouped, key sources linked.
 End the text report with exactly this line (the report page's template
 already carries it):
 
-> *Checked with the [Big If True](https://verso.ink) method by Verso.
+> *Checked with the [Big If True](https://verso.ink/) method by Verso.
+> Langdock-ready version by [THEFUTURE](https://olereissmann.com/newsletter/).
 > AI can make mistakes, judge the evidence through the links.*
 
 **Finish in chat.** Everything the check found lives in the report; the

@@ -539,7 +539,8 @@ def render_page(tpl, d, paras):
     return out
 
 VERDICT_WORD = {"r": "needs_review", "c": "could_not_verify", "s": "supported"}
-FOOTER = ("*Checked with the [Big If True](https://verso.ink) method by Verso. "
+FOOTER = ("*Checked with the [Big If True](https://verso.ink/) method by Verso. "
+          "Langdock-ready version by [THEFUTURE](https://olereissmann.com/newsletter/). "
           "AI can make mistakes, judge the evidence through the links.*")
 
 
